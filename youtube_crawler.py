@@ -86,6 +86,7 @@ def get_data(api_key, num_of_videos=1):
 
 
 if __name__ == '__main__':
-    api_key = load_api_key(api_key_path=r"C:\עידו\לימודים\שנה ד\Google API Key.txt")
+    api_key_path = r"C:\עידו\לימודים\שנה ד\Google API Key.txt"
+    api_key = load_api_key(api_key_path)
     df = get_data(api_key, num_of_videos=10)
     df.to_csv("youtube_dataset.csv")
