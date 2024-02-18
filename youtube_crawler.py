@@ -1,7 +1,7 @@
 from googleapiclient.discovery import build
-import pandas as pd
 from datetime import timedelta
-
+import pandas as pd
+import re
 
 def load_api_key(api_key_path):
     with open(api_key_path) as f:
@@ -9,30 +9,20 @@ def load_api_key(api_key_path):
         return api_key
 
 
-def convert_time(duration_str):
-    # Extract the numeric portion of the string
-    numeric_str = duration_str[2:]
+def convert_time(duration):
+    hours_pattern = re.compile(r'(\d+)H')
+    minutes_pattern = re.compile(r'(\d+)M')
+    seconds_pattern = re.compile(r'(\d+)S')
 
-    # Find the index of 'M' and 'S' characters
-    index_m = numeric_str.find('M')
-    index_s = numeric_str.find('S')
+    hours = hours_pattern.search(duration)
+    minutes = minutes_pattern.search(duration)
+    seconds = seconds_pattern.search(duration)
 
-    # Extract minutes and seconds substrings
-    minutes_str = numeric_str[:index_m]
-    seconds_str = numeric_str[index_m + 1:index_s]
+    hours = int(hours.group(1)) if hours else 0
+    minutes = int(minutes.group(1)) if minutes else 0
+    seconds = int(seconds.group(1)) if seconds else 0
 
-    # Convert minutes and seconds substrings to integers
-    minutes = int(minutes_str) if minutes_str else 0
-    seconds = int(seconds_str) if seconds_str else 0
-
-    # Calculate the total duration in seconds
-    total_seconds = minutes * 60 + seconds
-
-    # Calculate hours, minutes, and remaining seconds
-    hours, remainder = divmod(total_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-
-    # Format the duration as "00:02:39"
+    # Format the duration as "HH:MM:SS"
     formatted_duration = "{:02}:{:02}:{:02}".format(hours, minutes, seconds)
 
     return formatted_duration
@@ -88,5 +78,5 @@ def get_data(api_key, num_of_videos=1):
 if __name__ == '__main__':
     api_key_path = r"C:\עידו\לימודים\שנה ד\Google API Key.txt"
     api_key = load_api_key(api_key_path)
-    df = get_data(api_key, num_of_videos=10)
-    df.to_csv("youtube_dataset.csv")
+    df = get_data(api_key, num_of_videos=1)
+    # df.to_csv("youtube_dataset.csv")
