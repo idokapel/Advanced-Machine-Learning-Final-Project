@@ -44,31 +44,43 @@ def extract_data_from_response(response):
     return data
 
 
-def get_data(api_key, num_of_videos=1):
+def get_data(api_key, num_of_pages=1):
     # Create an instance of YouTube service
     youtube = build('youtube', 'v3', developerKey=api_key)
 
-    # Search for trending videos
-    request = youtube.search().list(
-        part='snippet',
-        q='trending',
-        type='video',
-        videoDuration='short',  # Optional: filter for short videos
-        maxResults=num_of_videos
-    )
-    response = request.execute()
-
-    # Extract video IDs from the search results
-    video_ids = [item['id']['videoId'] for item in response['items']]
     video_data = []
+    next_page_token = None
+    page_counter = 0
 
-    for video_id in video_ids:
-        request = youtube.videos().list(
-            part='snippet, statistics, contentDetails',
-            id=video_id
+    while True:
+        # Search for trending videos
+        page_request = youtube.search().list(
+            part='snippet',
+            q='trending',
+            type='video',
+            maxResults=50,
+            pageToken=next_page_token  # Initialize pageToken for first request
         )
-        video_response = request.execute()
-        video_data.append(extract_data_from_response(video_response))
+        page_counter += 1  # Count the number of pages
+        page_response = page_request.execute()
+
+        # Extract video IDs from the search results
+        video_ids = [item['id']['videoId'] for item in page_response['items']]
+
+        for video_id in video_ids:
+            video_request = youtube.videos().list(
+                part='snippet, statistics, contentDetails',
+                id=video_id
+            )
+            video_response = video_request.execute()
+            video_data.append(extract_data_from_response(video_response))
+
+        # Update next_page_token for next iteration
+        next_page_token = page_response.get('nextPageToken')
+
+        # If there isn't a next page, or got to max pages desired, break the loop
+        if (not next_page_token) or (page_counter == num_of_pages):
+            break
 
     # Create pandas DataFrame from the collected data
     df = pd.DataFrame(video_data)
@@ -78,5 +90,5 @@ def get_data(api_key, num_of_videos=1):
 if __name__ == '__main__':
     api_key_path = r"C:\עידו\לימודים\שנה ד\Google API Key.txt"
     api_key = load_api_key(api_key_path)
-    df = get_data(api_key, num_of_videos=100)
+    df = get_data(api_key, num_of_pages=5)
     df.to_csv("youtube_dataset.csv")
