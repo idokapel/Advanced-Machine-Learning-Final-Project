@@ -1,7 +1,7 @@
 from googleapiclient.discovery import build
-from datetime import timedelta
 import pandas as pd
 import re
+
 
 def load_api_key(api_key_path):
     with open(api_key_path) as f:
@@ -32,15 +32,15 @@ def extract_data_from_response(response):
     data = {}
     item = response['items'][0]
     data['video_id'] = item['id']
-    data['published_at'] = item['snippet']['publishedAt']
-    data['title'] = item['snippet']['title']
-    data['channel_title'] = item['snippet']['channelTitle']
-    data['view_count'] = item['statistics']['viewCount']
-    data['like_count'] = item['statistics']['likeCount']
-    data['favorite_count'] = item['statistics']['favoriteCount']
-    data['comment_count'] = item['statistics']['commentCount']
-    data['duration'] = convert_time(item['contentDetails']['duration'])
-    data['definition'] = item['contentDetails']['definition']
+    data['published_at'] = item['snippet'].get('publishedAt', None)
+    data['title'] = item['snippet'].get('title', None)
+    data['channel_title'] = item['snippet'].get('channelTitle', None)
+    data['view_count'] = item['statistics'].get('viewCount', None)
+    data['like_count'] = item['statistics'].get('likeCount', None)
+    data['favorite_count'] = item['statistics'].get('favoriteCount', None)
+    data['comment_count'] = item['statistics'].get('commentCount', None)
+    data['duration'] = convert_time(item['contentDetails'].get('duration', None))
+    data['definition'] = item['contentDetails'].get('definition', None)
     return data
 
 
@@ -78,5 +78,5 @@ def get_data(api_key, num_of_videos=1):
 if __name__ == '__main__':
     api_key_path = r"C:\עידו\לימודים\שנה ד\Google API Key.txt"
     api_key = load_api_key(api_key_path)
-    df = get_data(api_key, num_of_videos=1)
-    # df.to_csv("youtube_dataset.csv")
+    df = get_data(api_key, num_of_videos=100)
+    df.to_csv("youtube_dataset.csv")
