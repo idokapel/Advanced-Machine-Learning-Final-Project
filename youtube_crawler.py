@@ -92,3 +92,4 @@ if __name__ == '__main__':
     api_key = load_api_key(api_key_path)
     df = get_data(api_key, num_of_pages=10)
     df.to_csv("youtube_dataset.csv")
+    
