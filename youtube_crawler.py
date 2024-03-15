@@ -57,8 +57,8 @@ def extract_data_from_response(response, youtube):
         data['total_channel_views'] = channel_info['statistics'].get('viewCount', None)
         data['channel_description'] = channel_info['snippet'].get('description', None)
         data['channel_published_at'] = channel_info['snippet'].get('publishedAt', None)
-        data['videoCount'] = channel_info['statistics'].get('videoCount', None)  # Number of videos uploaded by the channel
-
+        data['videoCount'] = channel_info['statistics'].get('videoCount', None)  # Number of videos uploaded by the
+        # channel
 
     data['tags'] = item['snippet'].get('tags', [])
     data['category_id'] = item['snippet'].get('categoryId', None)
@@ -72,7 +72,7 @@ def extract_data_from_response(response, youtube):
 
 
 # Fetch and return data for a set number of pages from YouTube
-def get_data(api_key, num_of_pages=1):
+def get_data(api_key, query, order_by, num_of_pages=1):
     # Create an instance of the YouTube API service
     youtube = build('youtube', 'v3', developerKey=api_key)
 
@@ -83,10 +83,10 @@ def get_data(api_key, num_of_pages=1):
         # Search for newest cooking videos
         page_request = youtube.search().list(
             part='snippet',
-            q='cooking',
+            q=query,
             type='video',
             maxResults=50,
-            order='date',
+            order=order_by,
             pageToken=next_page_token
         )
         page_response = page_request.execute()
@@ -108,8 +108,16 @@ def get_data(api_key, num_of_pages=1):
     return pd.DataFrame(video_data)
 
 
+def main(api_key):
+    df1 = get_data(api_key, num_of_pages=5, query='cooking', order_by='date')
+    df2 = get_data(api_key, num_of_pages=5, query='learning', order_by='title')
+    df3 = get_data(api_key, num_of_pages=5, query='travel', order_by='relevance')
+    df4 = get_data(api_key, num_of_pages=5, query='technology', order_by='title')
+    df = pd.concat([df1, df2, df3, df4])
+    df.to_csv("youtube_dataset_new.csv", index=False)
+
+
 if __name__ == '__main__':
     api_key_path = r"C:\עידו\לימודים\שנה ד\Google API Key.txt"
     api_key = load_api_key(api_key_path)
-    df = get_data(api_key, num_of_pages=10)
-    df.to_csv("youtube_dataset.csv", index=False)
+    main(api_key)
