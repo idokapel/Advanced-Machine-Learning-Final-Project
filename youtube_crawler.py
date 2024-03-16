@@ -29,7 +29,7 @@ def convert_time(duration):
 
 
 # Extract data from the YouTube API response
-def extract_data_from_response(response, youtube):
+def extract_data_from_response(response, youtube, query):
     data = {}
     item = response['items'][0]
     data['video_id'] = item['id']
@@ -44,6 +44,7 @@ def extract_data_from_response(response, youtube):
     data['comment_count'] = item['statistics'].get('commentCount', None)
     data['duration'] = convert_time(item['contentDetails'].get('duration', None))
     data['definition'] = item['contentDetails'].get('definition', None)
+    data['topic'] = query
 
     # Additional channel information
     channel_response = youtube.channels().list(
@@ -99,7 +100,7 @@ def get_data(api_key, query, order_by, num_of_pages=1):
                 id=video_id
             )
             video_response = video_request.execute()
-            video_data.append(extract_data_from_response(video_response, youtube))
+            video_data.append(extract_data_from_response(video_response, youtube, query))
 
         next_page_token = page_response.get('nextPageToken')
         if not next_page_token:
