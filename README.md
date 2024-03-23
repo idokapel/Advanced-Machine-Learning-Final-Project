@@ -19,8 +19,17 @@ The vast amount of videos available on YouTube presents a unique opportunity to 
 3. Install the required Python packages: pip install -r requirements.txt
 
 ## Usage
-To run the project and analyze the YouTube dataset:
+### To run the project and analyze the YouTube dataset:
 - Ensure you have a valid YouTube API key and set it in the configuration.
+- Run [youtube_crawler.py](youtube_crawler.py)
+- Run [final_project.ipynb](final_project.ipynb)
+
+### To run the Streamlit app:
+- Navigate to the project directory
+- Ensure you have activated the project's virtual environment
+- Run the Streamlit application by executing the following command in your terminal or command prompt:
+streamlit run app.py
+
 
 
 

@@ -10,7 +10,7 @@ X_pca = pickle.load(open('X_pca.pkl', 'rb'))
 
 st.title('YouTube Data Clustering :thumbsup:')
 
-st.text('Enter your YouTube video metadata:')
+st.text('Enter your YouTube video metadata to see which cluster it belongs:')
 
 
 category_id = st.text_input('Input category_id', '1234')
